@@ -71,6 +71,9 @@ class ClientSM:
                     self.out_msg += "Time is: " + time_in
                             
                 elif my_msg == 'who':
+                    mysend(self.s, M_LIST)
+                    user_list = myrecv(self.s)
+                    self.out_msg += "Here are all the users in the system:\n" + user_list
                     pass
                             
                 elif my_msg[0] == 'c':
@@ -133,5 +136,5 @@ B. a group of THREE
 C. no preference
 
 Fill in your A/B/C below
-My selection:
+My selection: A
 """
