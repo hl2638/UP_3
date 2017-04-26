@@ -1,0 +1,1 @@
+wscript.createobject("wscript.shell").run "python chat_server.36.pyc"

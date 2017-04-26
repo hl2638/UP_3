@@ -1,0 +1,1 @@
+wscript.createobject("wscript.shell").run "python chat_cmdl_client.py"

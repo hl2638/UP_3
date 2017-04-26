@@ -31,7 +31,7 @@ class ClientSM:
         mysend(self.s, msg)
         response = myrecv(self.s)
         if response == (M_CONNECT+'ok'):
-            self.peer = peer
+            self.peer = peer                #doubt: what if multi-member?
             self.out_msg += 'You are connected with '+ self.peer + '\n'
             return (True)
         elif response == (M_CONNECT + 'busy'):
@@ -74,19 +74,33 @@ class ClientSM:
                     mysend(self.s, M_LIST)
                     user_list = myrecv(self.s)
                     self.out_msg += "Here are all the users in the system:\n" + user_list
+                    #done
                     pass
                             
                 elif my_msg[0] == 'c':
                     peer = my_msg[1:]
                     peer = peer.strip()
+                    #self.out_msg += "Pretending to connect"
+                    if self.connect_to(peer):
+                        self.state = S_CHATTING
+                        self.out_msg += "Connect to %s. Chat away!" % (peer)        #might change this message
+                    #done
                     pass
                         
                 elif my_msg[0] == '?':
                     term = my_msg[1:].strip()
+                    mysend(self.s, M_SEARCH + term)
+                    search_result = myrecv(self.s)
+                    self.out_msg += search_result.strip().[1:]
+                    #done
                     pass
                         
                 elif my_msg[0] == 'p':
                     poem_idx = my_msg[1:].strip()
+                    mysend(self.s, M_POEM + poem_idx)
+                    poem_in = myrecv(self.s)
+                    self.out_msg += poem_in.strip()[1:]
+                    #done
                     pass
 
                 else:
@@ -94,6 +108,12 @@ class ClientSM:
                     
             if len(peer_msg) > 0:
                 if peer_code == M_CONNECT:
+                    peer = peer_msg
+                    self.out_msg += "Request from %s\n" % (peer)
+                    self.peer = peer
+                    self.state = S_CHATTING        #doubt: what if multi-member?
+                    self.out_msg += "You are connected with %s. Chat away!" % (peer)
+                    #done
                     pass
                     
 #==============================================================================
@@ -109,10 +129,15 @@ class ClientSM:
                     self.peer = ''
             
             if len(peer_msg) > 0:    # peer's stuff, coming in
+                self.out_msg += peer_msg
+                #done
                 pass
 
             # I got bumped out
             if peer_code == M_DISCONNECT:
+                self.state = S_LOGGEDIN
+                self.disconnect()
+                #done
                 pass
 
             # Display the menu again
